@@ -1,0 +1,92 @@
+### 1) Valid expense under $100 -> Auto-approved
+POST http://localhost:7071/api/start-expense
+Content-Type: application/json
+
+{
+  "employeeName": "John Smith",
+  "employeeEmail": "john@example.com",
+  "amount": 50,
+  "category": "meals",
+  "description": "Team lunch",
+  "managerEmail": "manager@example.com"
+}
+
+### 2) Valid expense >= $100 -> wait for manager
+POST http://localhost:7071/api/start-expense
+Content-Type: application/json
+
+{
+  "employeeName": "Alice Brown",
+  "employeeEmail": "alice@example.com",
+  "amount": 250,
+  "category": "travel",
+  "description": "Taxi and hotel",
+  "managerEmail": "boss@example.com"
+}
+
+### 2a) Manager approves
+POST http://localhost:7071/api/manager-decision/f6b3dbd574c443df8bdbcfc36c8f3482
+Content-Type: application/json
+
+{
+  "decision": "approved"
+}
+
+### 3) Valid expense >= $100 -> rejected
+POST http://localhost:7071/api/start-expense
+Content-Type: application/json
+
+{
+  "employeeName": "Bob Green",
+  "employeeEmail": "bob@example.com",
+  "amount": 180,
+  "category": "software",
+  "description": "Tool subscription",
+  "managerEmail": "boss@example.com"
+}
+
+### 3a) Manager rejects
+POST http://localhost:7071/api/manager-decision/1228513e7d6c47039e0d040dc933d394
+Content-Type: application/json
+
+{
+  "decision": "rejected"
+}
+
+### 4) Valid expense >= $100 -> no manager response -> escalated
+POST http://localhost:7071/api/start-expense
+Content-Type: application/json
+
+{
+  "employeeName": "Sara White",
+  "employeeEmail": "sara@example.com",
+  "amount": 400,
+  "category": "equipment",
+  "description": "New monitor",
+  "managerEmail": "boss@example.com"
+}
+
+### 5) Missing required fields -> validation error
+POST http://localhost:7071/api/start-expense
+Content-Type: application/json
+
+{
+  "employeeName": "Jediael Mendoza",
+  "amount": 75,
+  "category": "meals",
+  "description": "Lunch",
+  "managerEmail": "boss@example.com"
+}
+
+### 6) Invalid category -> validation error
+POST http://localhost:7071/api/start-expense
+Content-Type: application/json
+
+{
+  "employeeName": "Invalid Category User",
+  "employeeEmail": "invalid@example.com",
+  "amount": 90,
+  "category": "gaming",
+  "description": "Game purchase",
+  "managerEmail": "boss@example.com"
+}

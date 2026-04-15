@@ -1,0 +1,131 @@
+### =========================================
+### CONFIG (EDIT THESE FIRST)
+### =========================================
+
+@managerUrl = https://prod-14.canadacentral.logic.azure.com:443/workflows/0ac5d4c3c47d4b5f821736d8c0fc0037/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=uZQAME_Tlu9SGcouKvonA86argVE20K6n6b9UX8P2cQ
+@requestId = PUT_REQUEST_ID_HERE
+
+
+### =========================================
+### SCENARIO 1 - Under $100 (Auto-approved)
+### Copy this JSON into Service Bus Explorer
+### =========================================
+
+Content-Type: application/json
+
+{
+  "employeeName": "John Smith",
+  "employeeEmail": "mend0214@algonquinlive.com",
+  "amount": 50,
+  "category": "meals",
+  "description": "Team lunch",
+  "managerEmail": "jediael.mendoza@gmail.com"
+}
+
+
+### =========================================
+### SCENARIO 2 - Over $100 (Approve)
+### Step 1: Send JSON to queue
+### Step 2: Run Manager approve request below
+### =========================================
+
+
+Content-Type: application/json
+
+{
+  "employeeName": "Alice Brown",
+  "employeeEmail": "mend0214@algonquinlive.com",
+  "amount": 250,
+  "category": "travel",
+  "description": "Taxi and hotel",
+  "managerEmail": "jediael.mendoza@gmail.com"
+}
+
+
+### Manager APPROVES
+POST {{managerUrl}}
+Content-Type: application/json
+
+{
+  "requestId": "6ac15c49-c8b0-4e3d-bb71-1f1394d31c50",
+  "decision": "approved"
+}
+
+
+### =========================================
+### SCENARIO 3 - Over $100 (Reject)
+### =========================================
+
+
+Content-Type: application/json
+
+{
+  "employeeName": "Bob Green",
+  "employeeEmail": "mend0214@algonquinlive.com",
+  "amount": 180,
+  "category": "software",
+  "description": "Tool subscription",
+  "managerEmail": "jediael.mendoza@gmail.com"
+}
+
+
+### Manager REJECTS
+POST {{managerUrl}}
+Content-Type: application/json
+
+{
+  "requestId": "87dca3fa-e07d-47a3-9a58-64fdc365da33",
+  "decision": "rejected"
+}
+
+
+### =========================================
+### SCENARIO 4 - Timeout (Escalated)
+### DO NOT send approval request
+### =========================================
+
+
+Content-Type: application/json
+
+{
+  "employeeName": "Sara White",
+  "employeeEmail": "mend0214@algonquinlive.com",
+  "amount": 400,
+  "category": "equipment",
+  "description": "New monitor",
+  "managerEmail": "jediael.mendoza@gmail.com"
+}
+
+
+### =========================================
+### SCENARIO 5 - Missing required field
+### =========================================
+
+
+Content-Type: application/json
+
+{
+  "employeeName": "Jediael Mendoza",
+  "employeeEmail": "mend0214@algonquinlive.com",
+  "amount": 75,
+  "category": "",
+  "description": "Lunch",
+  "managerEmail": "jediael.mendoza@gmail.com"
+}
+
+
+### =========================================
+### SCENARIO 6 - Invalid category
+### =========================================
+
+POST https://placeholder.local/queue
+Content-Type: application/json
+
+{
+  "employeeName": "Invalid Category User",
+  "employeeEmail": "mend0214@algonquinlive.com",
+  "amount": 90,
+  "category": "gaming",
+  "description": "Game purchase",
+  "managerEmail": "jediael.mendoza@gmail.com"
+}
